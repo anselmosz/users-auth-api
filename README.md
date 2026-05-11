@@ -45,14 +45,15 @@ Criado como base reutilizável para futuros projetos que necessitem de autentica
 
 ## 🌐 Deploy
 
-A API está disponível em produção:
+### Documentação (Swagger)
+
+🔗 Docs (Swagger): [Link da docuemntação](https://users-auth-jwt-api.onrender.com/api-docs)
+
+### A API está disponível em produção:
 
 🔗 API: https://users-auth-jwt-api.onrender.com
 
 
-### Documentação (Swagger)
-
-🔗 Docs (Swagger): [Link da docuemntação](https://users-auth-jwt-api.onrender.com/api-docs)
 
 
 ---
