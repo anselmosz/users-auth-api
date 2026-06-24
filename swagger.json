@@ -21,10 +21,6 @@
     {
       "url": "https://users-auth-jwt-api.onrender.com",
       "description": "API em produção"
-    },
-    {
-      "url": "https://localhost:3000",
-      "description": "API rodando em localhost"
     }
   ],
   "paths": {

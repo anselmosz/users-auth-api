@@ -22,7 +22,9 @@
 - [🧱 Estrutura](#-estrutura-de-módulos)
 - [⚙️ Tecnologias](#️-tecnologias-utilizadas)
 - [🔌 Endpoints](#-endpoints-da-api)
-- [▶️ Como executar](#️-como-executar-o-projeto)
+- [Como rodar o projeto](#como-executar-o-projeto)
+- [🐋 Como executar (com Docker)](#-como-executar-o-projeto-com-docker)
+- [▶️ Como executar (com Node)](#️-como-executar-o-projeto-com-node)
 
 ---
 
@@ -52,10 +54,6 @@ Criado como base reutilizável para futuros projetos que necessitem de autentica
 ### A API está disponível em produção:
 
 🔗 API: https://users-auth-jwt-api.onrender.com
-
-
-
-
 ---
 
 ## 🎯 Objetivo do Sistema
@@ -214,7 +212,7 @@ Responsável por autenticação e criação de contas.
 | POST   | /auth/login    | Login e geração de token JWT        |
 | POST   | /auth/reset    | Reset de senha do usuário           |
 
-#### Exemplo de body para registro
+#### Exemplo de body para criação de conta na rota /auth/register
 
 ```json
 {
@@ -286,48 +284,57 @@ Authorization: Bearer TOKEN
 
 ---
 
-## ▶️ Como executar o projeto
+### Como executar o projeto
+
+#### Formas de execução
+
+O projeto pode ser executado de duas formas:
+
+- 🐋 Docker: aplicação e banco de dados executados em containers.
+- ▶️ Node.js: aplicação executada localmente utilizando um banco MySQL instalado na máquina.
+
+Escolha apenas uma das opções
+
+#### 📋 Pré-requisitos
+
+Para executar o projeto localmente você precisará de uma das opções abaixo:
+
+#### Opção 1 - Docker
+
+- Docker Engine
+- Docker Compose
+
+#### Opção 2 - Node.js
+
+- Node.js >= 18
+- npm
+- MySQL 8+
 
 #### 1 Clonar o repositório e acessar o local
 
-```
-git clone https://github.com/anselmosz/users-auth-JWT-API
+```bash
+git clone https://github.com/anselmosz/users-auth-api
 
-cd <path to>/users-auth-JWT-API
-```
-
-#### 2 Instalar dependências
-
-```
-npm install
+cd users-auth-api
 ```
 
-#### 3 Criar o banco de dados
+#### 2 Configurar variáveis de ambiente
 
-Para este projeto, em testes locais usei o xampp como SGBD, utilizando o script `db_local.sql`
+Antes de executar o projeto, configure o arquivo `.env.development`.
 
-* Acessando o mysql via terminal, rode o seguinte comando:
-
-```
-source <path_to>/db_local.sql
-```
-
-
-#### 4 Configurar variáveis de ambiente
-
-Crie um arquivo `.env` baseado no `.env.example` configurando as variáveis do seu banco rodando localmente
+Esse arquivo é utilizado tanto pela aplicação Node.js quanto pelo Docker Compose para configurar o ambiente de desenvolvimento.
 
 ```
 NODE_ENV=development
 
-PORT=3000
+PORT=4000
 
 DB_CLIENT=mysql2
-DATABASE_URL=localhost
+DATABASE_URL=mysql-dev (para docker) ou localhost (para banco rodando na sua máquina)
 DB_PORT=3306
-DB_NAME=database_name
-DB_USER=db_user
-DB_PASSWORD=db_password
+DB_NAME=db_auth_jwt
+DB_USER=username
+DB_PASSWORD=password
 
 JWT_SECRET=seu_secret
 JWT_EXPIRES_IN=1h
@@ -348,20 +355,77 @@ JWT_EXPIRES_IN=1h
 | JWT_EXPIRES_IN   | Tempo de expiração do token              |
 
 
-#### 5 Executar o projeto
+### 🐋 Como executar o projeto com Docker
+
+Para essa execução, você precisa ter o Docker instalado em sua máquina: [link da documentação de instalação do Docker Engine no Ubuntu](https://docs.docker.com/engine/install/ubuntu/) (SO que estou usando atualmente)
+
+#### Realizar a criação dos containers via docker compose
+
+Acesse pasta do repositório em sua máquina e rode o seguinte comando:
+
+```bash
+docker compose --profile dev --env-file .env.development up -d
+```
+
+O profile `dev` inicia a aplicação utilizando a imagem de desenvolvimento definida no arquivo `docker-compose.yml`.
+
+#### Validando a execução
+
+Aguarde a finalização do build da imagem da aplicação, criação dos containers e inicialização do banco de dados. Após isso, rode o comando `docker ps` para verificar se os containers `users-api-dev` e `mysql-dev` foram criados corretamente e estão em execução.
+
+Com a inicialização dos containers:
+- **API:** http://localhost:4000
+- **Banco de dados:** localhost:3306
+
+Após os containers iniciarem, realize uma requisição para `POST /auth/register`
+
+Se o registro for criado com sucesso, a API e o banco de dados estão funcionando corretamente.
+
+#### Validação adicional
+
+Caso se depare com algum erro utlize os comandos `docker compose logs -f` ou `docker logs users-api-dev -f` (para verificar especificamente o container da API) 
+
+#### Parar os containers
+
+```bash
+docker compose --profile dev down
+```
+
+Ou: 
+```bash
+docker compose --profile dev down -v
+```
+
+### ▶️ Como executar o projeto com Node
+
+#### Instalar dependências
+
+```
+npm install
+```
+
+#### Criar o banco de dados
+
+Para este projeto, em testes locais usei o MySQL, utilizando o script `init.sql`
+
+* Acessando o mysql via terminal, rode o seguinte comando:
+
+```
+source <path_to>/init.sql
+```
+
+#### Executar o projeto criando a instância de desenvolvimento
 
 ```
 npm run dev
 ```
-<!-- 
----
 
-## Implementações futuras
+### Problemas comuns
 
-O projeto ainda está em desenvolvimento, e atualmente, as funcionalidades que estão mapeadas para ser implementadas são:
-- [ ] Implementar documentação gráfica com Swagger
-- [ ] Adicionar refresh token
-- [ ] Dockerizar aplicação
-- [ ] Migrar para PostgreSQL (Para deploy de backend e banco puramente no Render)
+#### Porta 3306 já está em uso por um container
 
--->
+Altere o mapeamento de portas no docker-compose.yml.
+
+#### Erro de conexão com banco
+
+Verifique se o valor de `DATABASE_URL` está correto para o modo de execução escolhido.

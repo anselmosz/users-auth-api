@@ -1,0 +1,48 @@
+services:
+  api-dev:
+    build: 
+      context: .
+      # target de qual "tag" o compose irá identificar para fazer o build
+      target: dev # Vai identificar a imagem "dev" para fazer o build
+    image: users-auth:dev # imagem da aplicação node que será criada com os dados do dockerfile
+    profiles: # perfil específico para iniciar esses serviços, para isolar containers de produção e desenvolvimento
+      - dev
+    networks:
+      - backend
+    container_name: users-api-dev
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mysql-dev
+    volumes:
+      - .:/app
+    command: npm run dev
+
+  mysql-dev:
+    image: mysql:9.7.1
+    profiles:
+      - dev
+    networks:
+      - backend
+    container_name: mysql-dev
+    # Variáveis de ambientes baseadas nos arquivos .env do repositório
+    environment: 
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD} 
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes: 
+      # Volume personalizado para o serviço mysql
+      - mysql_dev_data:/var/lib/mysql
+      # Inicialização do script init.sql do repositório para criação automática do banco
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "3306:3306"
+
+# volumes customizados para o projeto 
+volumes: 
+  mysql_dev_data:
+
+# rede personalizada para o projeto
+networks:
+  backend:
