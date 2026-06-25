@@ -47,9 +47,10 @@ Criado como base reutilizável para futuros projetos que necessitem de autentica
 
 ## 🌐 Deploy
 
+🔗 **API URL:** https://users-auth-jwt-api.onrender.com
+
 🔗 **Documentação (Swagger):** [Link da docuemntação](https://users-auth-jwt-api.onrender.com/api-docs) 
 
-🔗 **API URL:** https://users-auth-jwt-api.onrender.com
 ---
 
 ## 🎯 Objetivo do Sistema
